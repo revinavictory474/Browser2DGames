@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace PlatformerMVC
 {
-
     [RequireComponent(typeof(SpriteRenderer))]
     public class LevelObjectView : MonoBehaviour
     {

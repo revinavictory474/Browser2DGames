@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace PlatformerMVC
 {
-
-
     public class SpriteAnimatorController : IDisposable 
     {
         private sealed class Animation
