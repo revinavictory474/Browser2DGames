@@ -41,3 +41,21 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Sky Background
+    uniqueID: 3675702675
+    locked: 0
+  - name: Hills Background
+    uniqueID: 2950327759
+    locked: 0
+  - name: Hills Front Background
+    uniqueID: 2680305717
+    locked: 0
+  - name: Platforms
+    uniqueID: 3787749725
+    locked: 0
+  - name: Trees
+    uniqueID: 2008382297
+    locked: 0
+  - name: Player
+    uniqueID: 1379057771
+    locked: 0
