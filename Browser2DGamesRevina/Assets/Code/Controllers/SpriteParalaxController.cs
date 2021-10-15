@@ -1,55 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Transactions;
 using UnityEngine;
 
 namespace PlatformerMVC
 {
     public class SpriteParalaxController
     {
-        private Transform _background;
-        private Transform _mainBackground;
-        private Transform _backgroundTwo;
-        private Transform _mainBackgroundTwo;
+        private Transform[] _backgrounds;
+        private Transform _cameraTransform;
 
-        private float _leftBorder = -20.0f;
-        private float _rightBorder = 20.0f;
-        private float _relativeSpeedRate = 0.1f;
+        private Vector3 _previousCamPos;
         
-        private const float _COEF = 0.3f;
+        private float[] _paralaxScales;
+        private float _smoothing = 1.0f;
+        private float _spriteWidth = 0f;
 
-        public SpriteParalaxController(Transform back, Transform mainBackground, 
-            Transform backTwo, Transform mainBackgroundTwo)
+
+        public SpriteParalaxController(Transform camera, Transform[] backgrounds)
         {
-            _background = back;
-            _mainBackground = mainBackground;
-            _backgroundTwo = backTwo;
-            _mainBackgroundTwo = mainBackgroundTwo;
+            _backgrounds = backgrounds;
+            _cameraTransform = camera;
+            _previousCamPos = camera.position;
+
+            _paralaxScales = new float[_backgrounds.Length];
+
+            for(int i = 0; i < _backgrounds.Length; i++)
+            {
+                _paralaxScales[i] = _backgrounds[i].position.z * -1;
+                Sprite sprite = _backgrounds[i].gameObject.GetComponent<SpriteRenderer>().sprite;
+                Texture2D texture = sprite.texture;
+                _spriteWidth = texture.width / sprite.pixelsPerUnit; 
+            }
+
         }
 
         public void Update()
         {
-            Move(_background, 1);
-            Move(_mainBackground, 0.3f);
-            Move(_backgroundTwo, 1);
-            Move(_mainBackgroundTwo, 0.3f);
-            
+            Parallaxing();
         }
 
-        public void Move(Transform bg, float speed)
+        public void LateUpdate()
         {
-            bg.position += Vector3.left * speed * _relativeSpeedRate;
-            
-            Vector3 position = bg.position;
-            
-            if (position.x <= _leftBorder)
+            ScrollingBackground();
+        }
+
+        public void Parallaxing()
+        {
+            for(int i = 0; i<_backgrounds.Length; i++)
             {
-                bg.position = new Vector3(_rightBorder - (_leftBorder - position.x), position.y, position.z);
+                float paralax = (_previousCamPos.x - _cameraTransform.position.x) * _paralaxScales[i];
+                float backgroundTargetPositionX = _backgrounds[i].position.x + paralax;
+                Vector3 backgroundTargetPos = new Vector3(backgroundTargetPositionX, _backgrounds[i].position.y, _backgrounds[i].position.z);
+                _backgrounds[i].position = Vector3.Lerp(_backgrounds[i].position, backgroundTargetPos, _smoothing * Time.deltaTime);
             }
-                
-            else if (bg.position.x >= _rightBorder)
+
+            _previousCamPos = _cameraTransform.position;
+        }
+
+        public void ScrollingBackground()
+        {
+            for (int i = 0; i < _backgrounds.Length; i++)
             {
-                bg.position = new Vector3(_leftBorder + (_rightBorder - position.x), position.y, position.z);
+                if (Mathf.Abs(_cameraTransform.position.x - _backgrounds[i].transform.position.x) >= _spriteWidth)
+                {
+                    float offsetPositionX = (_cameraTransform.position.x - _backgrounds[i].transform.position.x) % _spriteWidth;
+                    _backgrounds[i].transform.position = new Vector3(_cameraTransform.position.x + offsetPositionX, _backgrounds[i].transform.position.y);
+                }
+
             }
         }
     }
