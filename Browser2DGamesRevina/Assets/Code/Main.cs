@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 namespace PlatformerMVC
 {
@@ -11,6 +12,26 @@ namespace PlatformerMVC
         [SerializeField] private int _animationSpeed = 10;
         [SerializeField] private CannonView _cannonView;
         [SerializeField] private List<LevelObjectView> _coinsViews;
+        [SerializeField] private Transform[] _backgroundsTransform;
+        [SerializeField] private Transform _cameraTransform;
+
+        [Header("Simple AI")]
+        [SerializeField] private AIConfig _simplePatrolAIConfig;
+        [SerializeField] private LevelObjectView _simplePatrolAIView;
+
+        [Header("Stalker AI")]
+        [SerializeField] private AIConfig _stalkerAIConfig;
+        [SerializeField] private LevelObjectView _stalkerAIView;
+        [SerializeField] private Seeker _stalkerAISeeker;
+        [SerializeField] private Transform _stalkerAITarget;
+
+        [Header("Protector AI")]
+        [SerializeField] private LevelObjectView _protectorAIView;
+        [SerializeField] private AIDestinationSetter _protectorAIDestinationSetter;
+        [SerializeField] private AIPatrolPath _protectorAIPatrolPath;
+        [SerializeField] private LevelObjectTrigger _protectedZoneTrigger;
+        [SerializeField] private Transform[] _protectorWaypoints;
+
 
         private SpriteAnimatorController _playerAnimator;
         private SpriteAnimatorController _coinAnimator;
@@ -20,11 +41,13 @@ namespace PlatformerMVC
         private CannonController _cannon;
         private BulletEmitterController _bulletEmitterController;
         private CoinsController _coinsController;
+        private SimplePatrolAIController _simplePatrolAIController;
+        private StalkerAIController _stalkerAIController;
+        private ProtectorAIController _protectorAI;
+        private ProtectedZone _protectedZone;
 
-        [SerializeField] private Transform[] _backgroundsTransform;
-        [SerializeField] private Transform _cameraTransform;
-        
-        
+
+
         void Start()
         {
             _paralaxController = new SpriteParalaxController(_cameraTransform, _backgroundsTransform);
@@ -46,6 +69,13 @@ namespace PlatformerMVC
             _cannon = new CannonController(_cannonView._muzzleTransform, _playerView.transform);
             _bulletEmitterController = new BulletEmitterController(_cannonView._bullets, _cannonView._emitterTransform);
             _coinsController = new CoinsController(_playerView, _coinsViews, _coinAnimator);
+            _simplePatrolAIController = new SimplePatrolAIController(_simplePatrolAIView, new SimplePatrolAIModel(_simplePatrolAIConfig));
+            _stalkerAIController = new StalkerAIController(_stalkerAIView, new StalkerAIModel(_stalkerAIConfig), _stalkerAISeeker, _stalkerAITarget);
+            InvokeRepeating(nameof(RecalculateAIPath), 0.0f, 1.0f);
+            _protectorAI = new ProtectorAIController(_protectorAIView, new PatrolAIModel(_protectorWaypoints), _protectorAIDestinationSetter, _protectorAIPatrolPath);
+            _protectorAI.Init();
+            _protectedZone = new ProtectedZone(_protectedZoneTrigger, new List<IProtector> { _protectorAI });
+            _protectedZone.Init();
         }
 
         void Update()
@@ -62,5 +92,24 @@ namespace PlatformerMVC
         {
             _paralaxController.LateUpdate();
         }
+
+        private void FixedUpdate()
+        {
+            _simplePatrolAIController.FixedUpdate();
+            _stalkerAIController.FixedUpdate();
+        }
+
+        private void OnDestroy()
+        {
+            _protectorAI.Deinit();
+            _protectedZone.Deinit();
+        }
+
+        private void RecalculateAIPath()
+        {
+            _stalkerAIController.RecalculatePath();
+        }
+
+
     }
 }
