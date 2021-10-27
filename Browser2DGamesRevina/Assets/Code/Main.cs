@@ -14,6 +14,7 @@ namespace PlatformerMVC
         [SerializeField] private List<LevelObjectView> _coinsViews;
         [SerializeField] private Transform[] _backgroundsTransform;
         [SerializeField] private Transform _cameraTransform;
+        [SerializeField] private GeneratorLevelView _generatorLevelView;
 
         [Header("Simple AI")]
         [SerializeField] private AIConfig _simplePatrolAIConfig;
@@ -45,6 +46,7 @@ namespace PlatformerMVC
         private StalkerAIController _stalkerAIController;
         private ProtectorAIController _protectorAI;
         private ProtectedZone _protectedZone;
+        private GeneratorController _levelGeneratorController;
 
 
 
@@ -76,6 +78,9 @@ namespace PlatformerMVC
             _protectorAI.Init();
             _protectedZone = new ProtectedZone(_protectedZoneTrigger, new List<IProtector> { _protectorAI });
             _protectedZone.Init();
+
+            _levelGeneratorController = new GeneratorController(_generatorLevelView);
+            _levelGeneratorController.Init();
         }
 
         void Update()
