@@ -19,6 +19,8 @@ namespace PlatformerMVC
 
         private const int _countWall = 4;
 
+        private MarchingSquareGenerator _marchingSquareGenerator = new MarchingSquareGenerator();
+
         public GeneratorController(GeneratorLevelView levelView)
         {
             _tilemap = levelView.TileMap;
@@ -39,7 +41,12 @@ namespace PlatformerMVC
             {
                 SmoothMap();
             }
-            DrawTiles();
+
+            _marchingSquareGenerator.GenerateGrid(_map, 1);
+
+            _marchingSquareGenerator.DrawTilesOnGrid(_tilemap, _tile);
+
+           // DrawTiles();
         }
 
         private void RandomFillMap()

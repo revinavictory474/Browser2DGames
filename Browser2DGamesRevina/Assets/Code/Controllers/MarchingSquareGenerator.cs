@@ -5,6 +5,10 @@ namespace PlatformerMVC
 {
     public class MarchingSquareGenerator : MonoBehaviour
     {
+        private Tilemap _tileMapGround;
+        private Tile _tile;
+        private SquareGrid _squareGrid;
+
         public class Node
         {
             public Vector3 _position;
@@ -72,6 +76,44 @@ namespace PlatformerMVC
                             controlNodes[x + 1, y], controlNodes[x, y]);
                     }
                 }
+            }
+        }
+
+        public void GenerateGrid(int[,] map, float squareSize)
+        {
+            _squareGrid = new SquareGrid(map, squareSize);
+        }
+
+        public void DrawTilesOnGrid(Tilemap tileMap, Tile tile)
+        {
+            if (_squareGrid == null)
+                return;
+
+            _tileMapGround = tileMap;
+            _tile = tile;
+
+            for (int x = 0; x < _squareGrid.Squares.GetLength(0); x++)
+            {
+                for (int y = 0; y < _squareGrid.Squares.GetLength(1); y++)
+                {
+                    DrawTilesInControlNode(_squareGrid.Squares[x, y].TopLeft._active,
+                        _squareGrid.Squares[x, y].TopLeft._position);
+                    DrawTilesInControlNode(_squareGrid.Squares[x, y].TopRight._active,
+                        _squareGrid.Squares[x, y].TopRight._position);
+                    DrawTilesInControlNode(_squareGrid.Squares[x, y].BottomLeft._active,
+                        _squareGrid.Squares[x, y].BottomLeft._position);
+                    DrawTilesInControlNode(_squareGrid.Squares[x, y].BottomRight._active,
+                        _squareGrid.Squares[x, y].BottomRight._position);
+                }
+            }
+        }
+
+        private void DrawTilesInControlNode(bool active, Vector3 position)
+        {
+            if(active)
+            {
+                Vector3Int tilePosition = new Vector3Int((int)position.x, (int)position.y, 0);
+                _tileMapGround.SetTile(tilePosition, _tile);
             }
         }
     }
