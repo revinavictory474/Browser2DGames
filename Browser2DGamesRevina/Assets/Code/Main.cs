@@ -12,6 +12,7 @@ namespace PlatformerMVC
         [SerializeField] private int _animationSpeed = 10;
         [SerializeField] private CannonView _cannonView;
         [SerializeField] private List<LevelObjectView> _coinsViews;
+        [SerializeField] private QuestObjectView _singleQuest;
         [SerializeField] private Transform[] _backgroundsTransform;
         [SerializeField] private Transform _cameraTransform;
         [SerializeField] private GeneratorLevelView _generatorLevelView;
@@ -47,6 +48,7 @@ namespace PlatformerMVC
         private ProtectorAIController _protectorAI;
         private ProtectedZone _protectedZone;
         private GeneratorController _levelGeneratorController;
+        private QuestConfiguratorController _questConfigurator;
 
 
 
@@ -81,6 +83,9 @@ namespace PlatformerMVC
 
             _levelGeneratorController = new GeneratorController(_generatorLevelView);
             _levelGeneratorController.Init();
+
+            _questConfigurator = new QuestConfiguratorController(_singleQuest);
+            _questConfigurator.Init();
         }
 
         void Update()
