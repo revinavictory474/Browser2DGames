@@ -12,7 +12,7 @@ namespace PlatformerMVC
         [SerializeField] private int _animationSpeed = 10;
         [SerializeField] private CannonView _cannonView;
         [SerializeField] private List<LevelObjectView> _coinsViews;
-        [SerializeField] private QuestObjectView _singleQuest;
+        [SerializeField] private QuestView _singleQuest;
         [SerializeField] private Transform[] _backgroundsTransform;
         [SerializeField] private Transform _cameraTransform;
         [SerializeField] private GeneratorLevelView _generatorLevelView;

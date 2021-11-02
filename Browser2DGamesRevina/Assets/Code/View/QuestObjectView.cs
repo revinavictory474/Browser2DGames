@@ -8,7 +8,7 @@ namespace PlatformerMVC
     {
         [SerializeField] private Color _completeColor;
         private Color _defaultColor;
-
+        public int Id => _id;
         [SerializeField] private int _id;
 
         private void Awake()
